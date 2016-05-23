@@ -51,6 +51,10 @@ function main() {
   process.on('SIGINT', function() {
      process.exit();
   });
+  
+  process.on('SIGTERM', function() {
+     process.exit();
+  });
 
   startInspectorProcess(function(error, result) {
     if (error) {
@@ -171,7 +175,13 @@ function startDebuggedProcess(callback) {
       execArgv: config.subproc.execArgs
     }
   );
+  
   debuggedProcess.on('exit', function() { process.exit(); });
+  
+  process.on('exit', function() {
+    debuggedProcess.kill('SIGINT');
+  });
+  
   callback();
 }
 
